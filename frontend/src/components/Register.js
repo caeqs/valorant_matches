@@ -6,13 +6,51 @@ function Register({ onBackToLogin, onRegisterSuccess }) {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+
+  const validateEmail = (email) => {
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return regex.test(email);
+  };
+
+  const validateForm = () => {
+    // Campos vazios
+    if (!username.trim() || !email.trim() || !password.trim() || !confirmPassword.trim()) {
+      setError('Todos os campos devem ser preenchidos!');
+      return false;
+    }
+
+    // Email válido
+    if (!validateEmail(email)) {
+      setError('Email inválido!');
+      return false;
+    }
+
+    // Senha mínimo 4 dígitos
+    if (password.length < 4) {
+      setError('A senha deve ter no mínimo 4 caracteres!');
+      return false;
+    }
+
+    // Senhas iguais
+    if (password !== confirmPassword) {
+      setError('As senhas não coincidem!');
+      return false;
+    }
+
+    return true;
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setSuccess('');
+
+    if (!validateForm()) {
+      return;
+    }
 
     try {
       await axios.post('http://localhost:3000/auth/create', {
@@ -39,18 +77,16 @@ function Register({ onBackToLogin, onRegisterSuccess }) {
         <form onSubmit={handleSubmit}>
           <input
             type="text"
-            placeholder="Nome de usuário"
+            placeholder="Usuário"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
-            required
           />
-          
+
           <input
             type="email"
             placeholder="Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            required
           />
           
           <input
@@ -58,7 +94,13 @@ function Register({ onBackToLogin, onRegisterSuccess }) {
             placeholder="Senha"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            required
+          />
+
+          <input
+            type="password"
+            placeholder="Confirmar Senha"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
           />
           
           {error && <p className="error">{error}</p>}

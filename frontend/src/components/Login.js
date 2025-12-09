@@ -3,23 +3,43 @@ import axios from 'axios';
 import './Login.css';
 
 function Login({ onLogin, onShowRegister }) {
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+
+  const validateForm = () => {
+    // Campo vazio
+    if (!username.trim() || !password.trim()) {
+      setError('Todos os campos devem ser preenchidos!');
+      return false;
+    }
+
+    // Senha mínimo 4 dígitos
+    if (password.length < 4) {
+      setError('A senha deve ter no mínimo 4 caracteres!');
+      return false;
+    }
+
+    return true;
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
 
+    if (!validateForm()) {
+      return;
+    }
+
     try {
       const response = await axios.post('http://localhost:3000/auth/login', {
-        email,
+        username,
         password
       });
       
       onLogin(response.data.token);
     } catch (err) {
-      setError('Email ou senha incorretos!');
+      setError('Usuário ou senha incorretos!');
     }
   };
 
@@ -31,11 +51,10 @@ function Login({ onLogin, onShowRegister }) {
         
         <form onSubmit={handleSubmit}>
           <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
+            type="text"
+            placeholder="Usuário"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
           />
           
           <input
@@ -43,7 +62,6 @@ function Login({ onLogin, onShowRegister }) {
             placeholder="Senha"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            required
           />
           
           {error && <p className="error">{error}</p>}

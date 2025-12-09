@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import './MatchForm.css';
 
 function MatchForm({ match, onSave, onCancel }) {
@@ -6,19 +7,13 @@ function MatchForm({ match, onSave, onCancel }) {
   const [agente, setAgente] = useState('');
   const [placar, setPlacar] = useState('');
   const [resultado, setResultado] = useState('vitoria');
+  const [mapas, setMapas] = useState([]);
+  const [agentes, setAgentes] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const mapas = [
-    'Ascent', 'Bind', 'Haven', 'Split', 'Icebox', 
-    'Breeze', 'Fracture', 'Pearl', 'Lotus', 'Sunset'
-  ];
-
-  const agentes = [
-    'Jett', 'Phoenix', 'Sage', 'Sova', 'Viper',
-    'Cypher', 'Reyna', 'Killjoy', 'Breach', 'Omen',
-    'Raze', 'Skye', 'Yoru', 'Astra', 'KAY/O',
-    'Chamber', 'Neon', 'Fade', 'Harbor', 'Gekko',
-    'Deadlock', 'Iso', 'Clove', 'Vyse'
-  ];
+  useEffect(() => {
+    loadValorantContent();
+  }, []);
 
   useEffect(() => {
     if (match) {
@@ -29,10 +24,47 @@ function MatchForm({ match, onSave, onCancel }) {
     }
   }, [match]);
 
+  const loadValorantContent = async () => {
+    try {
+      const response = await axios.get('http://localhost:3000/valorant/content');
+      setMapas(response.data.mapas);
+      setAgentes(response.data.agentes);
+      setLoading(false);
+    } catch (error) {
+      console.error('Erro ao carregar conteúdo:', error);
+      // Fallback para lista estática se a API falhar
+      setMapas([
+        { name: 'Ascent' }, { name: 'Bind' }, { name: 'Haven' }, 
+        { name: 'Split' }, { name: 'Icebox' }, { name: 'Breeze' },
+        { name: 'Fracture' }, { name: 'Pearl' }, { name: 'Lotus' }, 
+        { name: 'Sunset' }, { name: 'Abyss' }
+      ]);
+      setAgentes([
+        { name: 'Jett' }, { name: 'Phoenix' }, { name: 'Sage' }, 
+        { name: 'Sova' }, { name: 'Viper' }, { name: 'Cypher' },
+        { name: 'Reyna' }, { name: 'Killjoy' }, { name: 'Breach' }, 
+        { name: 'Omen' }, { name: 'Raze' }, { name: 'Skye' },
+        { name: 'Yoru' }, { name: 'Astra' }, { name: 'KAY/O' },
+        { name: 'Chamber' }, { name: 'Neon' }, { name: 'Fade' },
+        { name: 'Harbor' }, { name: 'Gekko' }, { name: 'Deadlock' },
+        { name: 'Iso' }, { name: 'Clove' }, { name: 'Vyse' }
+      ]);
+      setLoading(false);
+    }
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     onSave({ mapa, agente, placar, resultado });
   };
+
+  if (loading) {
+    return (
+      <div className="match-form">
+        <h2>Carregando dados do Valorant...</h2>
+      </div>
+    );
+  }
 
   return (
     <div className="match-form">
@@ -46,8 +78,8 @@ function MatchForm({ match, onSave, onCancel }) {
             required
           >
             <option value="">Selecione um mapa</option>
-            {mapas.map(m => (
-              <option key={m} value={m}>{m}</option>
+            {mapas.map((m, index) => (
+              <option key={m.id || index} value={m.name}>{m.name}</option>
             ))}
           </select>
         </div>
@@ -60,8 +92,8 @@ function MatchForm({ match, onSave, onCancel }) {
             required
           >
             <option value="">Selecione um agente</option>
-            {agentes.map(a => (
-              <option key={a} value={a}>{a}</option>
+            {agentes.map((a, index) => (
+              <option key={a.id || index} value={a.name}>{a.name}</option>
             ))}
           </select>
         </div>

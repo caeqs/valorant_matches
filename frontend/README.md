@@ -1,70 +1,194 @@
-# Getting Started with Create React App
+# 🎮 Valorant Match 
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+O Valorant Match é uma aplicação web que permite aos jogadores de Valorant registrarem suas partidas, incluindo informações como mapa jogado, agente utilizado, placar e resultado. O sistema oferece autenticação de usuários, estatísticas e integração com a API oficial da Riot Games para obter dados atualizados de mapas e agentes.
 
-## Available Scripts
+### Principais Funcionalidades:
+- ✅ Sistema de autenticação (login e cadastro)
+- ✅ Registro completo de partidas (CRUD)
+- ✅ Visualização de estatísticas (vitórias, derrotas, taxa de vitória)
+- ✅ Integração com API oficial do Valorant
+- ✅ Validações de formulários
 
-In the project directory, you can run:
+---
 
-### `npm start`
+## 🛠️ Tecnologias Utilizadas
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## Backend
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+### **server.js**
 
-### `npm test`
+Configura o servidor:
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+* Express + CORS
+* Rotas de autenticação, partidas e Valorant
+* Porta 3000
 
-### `npm run build`
+### **config/valorantApi.js**
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+* Conexão com API da Riot
+* Retorna mapas e agentes
+* Usa API Key definida no `.env`
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### **models**
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+* **User:** id, username, email, password hash
+* **Match:** id, email do usuário, mapa, agente, placar, resultado, data
 
-### `npm run eject`
+### **Autenticação**
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+* **POST /auth/login:** valida usuário/senha, usa bcrypt e gera JWT
+* **POST /auth/create:** valida dados, checa duplicidade, salva usuário
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+**Validações:**
+Campos obrigatórios, email válido, username único, senha ≥ 4 caracteres.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+### **Partidas**
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+CRUD completo com autenticação JWT:
 
-## Learn More
+* **GET /matches:** lista partidas do usuário
+* **POST /matches:** cria partida
+* **PUT /matches/:id:** atualiza partida
+* **DELETE /matches/:id:** remove partida
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+### **API Valorant**
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+* **GET /valorant/content:** retorna mapas e agentes oficiais
 
-### Code Splitting
+### **Banco de Dados**
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+* `db/users.json` e `db/matches.json` armazenam usuários e partidas
 
-### Analyzing the Bundle Size
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+## Frontend
 
-### Making a Progressive Web App
+### **App.js**
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+* Gerencia login, rotas e armazenamento do token
 
-### Advanced Configuration
+### **Login**
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+* Validação de campos
+* Envia credenciais para `/auth/login`
+* Armazena token
 
-### Deployment
+### **Register**
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+* Validação completa
+* Envio para `/auth/create`
+* Redirecionamento pós-cadastro
 
-### `npm run build` fails to minify
+### **Dashboard**
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+* Estatísticas: vitórias, derrotas, taxa
+* Lista de partidas
+* Botão para adicionar partida
+* Logout
+
+### **MatchForm**
+
+* Busca mapas/agentes pela API
+* Cria e edita partidas
+* Valida placar
+
+### **MatchList**
+
+* Cards com partidas
+* Botões de editar e excluir
+* Estilo visual para vitória/derrota
+* Data formatada
+
+---
+
+## ▶️ Como Rodar
+
+### Backend
+
+```bash
+cd backend
+npm install
+node server.js
+```
+
+Crie `.env`:
+
+```
+TOKEN=seu_token_jwt
+RIOT_API_KEY=sua_chave_riot
+```
+
+### Frontend
+
+```bash
+cd frontend
+npm install
+npm start
+```
+
+Acesse:
+`http://localhost:3000`
+
+---
+
+## 📊 Fluxo de Uso
+
+1. **Primeiro Acesso:**
+   - Usuário clica em "Cadastre-se"
+   - Preenche: usuário, email, senha, confirmar senha
+   - Sistema valida e cria conta
+   - Redirecionado para login
+   ![Cadastro de Novo Usuário](fluxo_uso/Cadastro.png)
+
+2. **Login:**
+   - Usuário entra com username e senha
+   - Sistema valida e gera token
+   - Redirecionado para Dashboard
+   ![Login de Usuário](fluxo_uso/Login.png)
+
+3. **Dashboard:**
+   - Visualiza estatísticas gerais
+   - Vê histórico de partidas
+   - Clica em "Registrar Nova Partida"
+   ![Tela Principal](fluxo_uso/Dashboard.png)
+
+4. **Registrar Partida:**
+   - Seleciona mapa (via API Riot)
+   - Seleciona agente (via API Riot)
+   - Informa placar (ex: 13-11)
+   - Marca vitória ou derrota
+   - Clica em Salvar
+   ![Criação de Match](fluxo_uso/RegistroMatch.png)
+
+5. **Gerenciar Partidas:**
+   - Editar: Clica em "Editar", altera dados, salva
+   ![Edição de Match](fluxo_uso/EditarMatch.png)
+   - Excluir: Clica em "Excluir", confirma exclusão
+   ![Exclusão de Match](fluxo_uso/ExcluirMatch.png)
+   - Visualizar: Scroll pela lista de partidas
+   ![Visualização de Matches Criadas](fluxo_uso/DashboardMatch.png)
+   
+6. **Logout:**
+   - Clica em "Sair"
+   - Retorna para login
+
+---
+
+### Paleta de Cores:
+- **Primary:** #ff4655 (Vermelho Valorant)
+- **Success:** #00ff88 (Verde vitória)
+- **Background:** Gradient #0f1923 → #1a2332
+
+---
+
+## 👨‍💻 Autor
+
+Projeto desenvolvido como aprendizado de Programação Web por Ana Clara Caetano, estudande de Sistemas de Infomeção e Analista de Projetos.
+*https://github.com/caeqs*
+*https://www.linkedin.com/in/anaclara-caetano/*
+
+---
+
+## 🎮 Valorant - Riot Games
+
+Este projeto é de código aberto para fins educacionais.
