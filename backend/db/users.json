@@ -1,0 +1,16 @@
+{
+  "users": [
+    {
+      "id": 0,
+      "username": "aena",
+      "email": "anaclaracaetano27@gmail.com",
+      "password": "$2b$10$5bTST4unHtz9QANJrEl26.xQtbDKW6ubVYNZfcG6y3sqm483QGmJC"
+    },
+    {
+      "id": 1,
+      "username": "aena",
+      "email": "anaahvolpii@gmail.com",
+      "password": "$2b$10$dd5H7.cjiOGybBpySEFbKu4CLw9uhBGPzB8cWxKJr9dBKT8awSEtG"
+    }
+  ]
+}
